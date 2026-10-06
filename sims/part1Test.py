@@ -1,5 +1,5 @@
 maxTorque = 180 #nm
-carMass = 100 #kg (with driver)
+carMass = 300 #kg (with driver)
 gearRatio = 3 #3:1
 wheelRadius = 0.216 #m
 
