@@ -54,6 +54,7 @@ def step (state:State) -> State:
    
     newTime = state.time + timeStep
 
+    #Update state
     return( State( 
                 steeringInput=steeringInput,
                 time=newTime,
@@ -64,8 +65,10 @@ def step (state:State) -> State:
 
 #Starting State
 state = State()
+
+#Tables for sim graph
 timeTable = [state.time]
-accelerationTable = [state.acceleration]
+slipAngleTable = [state.slipAngle]
 
 def animate (i):
      global state
@@ -77,9 +80,9 @@ def animate (i):
     #update state
      state = step(state)
      timeTable.append( state.time )
-     accelerationTable.append( state.acceleration )
+     slipAngleTable.append( state.slipAngle )
 
-     line.set_data(timeTable, accelerationTable)
+     line.set_data(timeTable, slipAngleTable)
 
      
     
@@ -91,7 +94,7 @@ ax.grid()
 ax.set_xlim(-2, 30)
 ax.set_ylim(-2, 10)
 ax.set_xlabel("Time (s)")
-ax.set_ylabel("Acceleration (m/s^2)")
+ax.set_ylabel("Slip Angle (rad)")
 # these lines are so the animation doesnt zoom in or out
 line, = ax.plot([], [])
 

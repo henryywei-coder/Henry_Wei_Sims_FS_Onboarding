@@ -12,7 +12,37 @@ wheelRadius = 0.216 #m
 rampThrottleTime = 7 #s
 fullThrottleTime = 15 #s
 
+#function parameters for throttle input cubic function
+# throttleInput = Ax^3 + Bx^2 + Cx + Dx 
+A = 4/343
+B = -6/49
+C = 3/7
+D = 0.0
+
+
 timeStep = 0.01 #s time increments in the simulation
+
+
+
+def throttleInputFunction( t:float ) -> float: 
+    """
+    Input: simulation time \n
+    Output: throttle input \n
+    Handles ramping throttle and holding full throttle.
+    """
+    # throttleInput = Ax^3 + Bx^2 + Cx + Dx 
+    if(t <= rampThrottleTime): # ramping up throttle input
+        return A * t**3 + B * t**2 + C * t + D
+    
+    elif(t <= rampThrottleTime + fullThrottleTime): #full throttle
+        return 1.0
+    
+    else: #throw error time went over simulation window
+        raise ValueError("Time is out of bounds for throttle input function")
+
+    
+    
+    
 
 @dataclass
 class State:
@@ -24,12 +54,13 @@ class State:
     acceleration: float = 0.0 #m/s^2 current acceleration of the car 
 
 def step (state:State) -> State:
+    """
+    Performs a frame of the simulation
+    Input: current state of the simulation \n
+    Output: new state of the simulation after a time step
+    """
 
-    if(state.time <= rampThrottleTime): # ramping up throttle input 
-            throttleInput = state.time / rampThrottleTime
-    
-    else: #full throttle
-        throttleInput = 1.0
+    throttleInput = throttleInputFunction( state.time )
     
     #Calculate 
     # Multiply driver input by the maximum motor torque to get command torque (rotational force needed from the motor). 
@@ -51,8 +82,11 @@ timeTable = [state.time]
 accelerationTable = [state.acceleration]
 
 def animate (i):
+     """"
+     Animates a frame of the simulation onto the graph
+     """
      global state
-     print("frame", i, "time", state.time)
+     
 
      if state.time >= rampThrottleTime + fullThrottleTime: # stop the animation when the simulation is done
         ani.event_source.stop()
@@ -62,6 +96,8 @@ def animate (i):
      state = step(state)
      timeTable.append( state.time )
      accelerationTable.append( state.acceleration )
+
+     print("frame", i, "time", state.time, "throttleInput", state.throttleInput, "acceleration", state.acceleration)
 
      line.set_data(timeTable, accelerationTable)
 
