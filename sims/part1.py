@@ -24,6 +24,7 @@ timeStep = 0.01 #s time increments in the simulation
 
 
 
+
 def throttleInputFunction( t:float ) -> float: 
     """
     Input: simulation time \n
@@ -46,12 +47,12 @@ def throttleInputFunction( t:float ) -> float:
 
 @dataclass
 class State:
-    #input
     throttleInput: float = 0.0 #0 no acceleration, 1 full acceleration
     time: float = 0.0 #s current time in the simulation
-
-    #output     
+    stepCount: int = 0 #number of steps in the simulation (should remove small errors in time)
+       
     acceleration: float = 0.0 #m/s^2 current acceleration of the car 
+
 
 def step (state:State) -> State:
     """
@@ -72,51 +73,67 @@ def step (state:State) -> State:
     # To find acceleration, use the formula Force = mass * acceleration. a =F/m
     acceleration = wheelForce / carMass
 
-    newTime = state.time + timeStep
-
-    return( State( throttleInput=throttleInput, time=newTime, acceleration=acceleration ) )
+    
+    newStepCount = state.stepCount + 1
+    newTime = state.stepCount * timeStep
+    return( State( throttleInput=throttleInput, time=newTime, stepCount=newStepCount, acceleration=acceleration ) )
 
 #Starting State
 state = State()
 timeTable = [state.time]
 accelerationTable = [state.acceleration]
+throttleTable = [state.throttleInput]
 
 def animate (i):
-     """"
-     Animates a frame of the simulation onto the graph
+     """
+     Animates a frame of the simulation onto the graphs
      """
      global state
      
 
      if state.time >= rampThrottleTime + fullThrottleTime: # stop the animation when the simulation is done
         ani.event_source.stop()
-        return line,
+        return throttleLine, accelLine
 
     #update state
      state = step(state)
      timeTable.append( state.time )
      accelerationTable.append( state.acceleration )
-
+     throttleTable.append( state.throttleInput )
      print("frame", i, "time", state.time, "throttleInput", state.throttleInput, "acceleration", state.acceleration)
 
-     line.set_data(timeTable, accelerationTable)
+    #adding data to graph
+     throttleLine.set_data(timeTable, throttleTable)
+     accelLine.set_data(timeTable, accelerationTable)
+     
+     return throttleLine, accelLine
 
      
     
 
 # graphing stuff
-fig = plt.figure(figsize=(3,3), dpi=150)
-ax = fig.add_subplot(111)
-ax.grid()
-ax.set_xlim(-2, 30)
-ax.set_ylim(-2, 10)
-ax.set_xlabel("Time (s)")
-ax.set_ylabel("Acceleration (m/s^2)")
+#Creates two graphs 
+fig, (throttleAx, accelAx) = plt.subplots(2, 1, figsize=(4, 5), dpi=150, sharex=True)
+# top graph: throttle input
+throttleAx.grid()
+throttleAx.set_xlim(-2, 30)
+throttleAx.set_ylim(-0.1, 1.1)
+throttleAx.set_xlabel("Time (s)")
+throttleAx.set_ylabel("Throttle Input")
+throttleAx.set_title("Throttle Input")
+
+# bottom graph: acceleration
+accelAx.grid()
+accelAx.set_ylim(-2, 10)
+accelAx.set_xlabel("Time (s)")
+accelAx.set_ylabel("Acceleration (m/s^2)")
+accelAx.set_title("Acceleration")
 # these lines are so the animation doesnt zoom in or out
-line, = ax.plot([], [])
+throttleLine, = throttleAx.plot([], [], color="tab:orange")
+accelLine, = accelAx.plot([], [], color="tab:blue")
 
 plt.pause(3)
-
+fig.tight_layout() #adjusts graphs so they dont overlap  
 #calls animate repeatedly to animate each frame of the simulation
 ani = animation.FuncAnimation(fig, animate, interval=0)
 plt.show()
