@@ -13,10 +13,10 @@ rampThrottleTime = 7 #s
 fullThrottleTime = 15 #s
 
 #function parameters for throttle input cubic function
-# throttleInput = Ax^3 + Bx^2 + Cx + Dx 
-A = 4/343
-B = -6/49
-C = 3/7
+# throttleInput = Ax^3 + Bx^2 + Cx + D
+A = -2/343
+B = 3/49
+C = 0.0
 D = 0.0
 
 
@@ -100,6 +100,7 @@ def animate (i):
      timeTable.append( state.time )
      accelerationTable.append( state.acceleration )
      throttleTable.append( state.throttleInput )
+     
      print("frame", i, "time", state.time, "throttleInput", state.throttleInput, "acceleration", state.acceleration)
 
     #adding data to graph
