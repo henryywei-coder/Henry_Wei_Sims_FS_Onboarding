@@ -1,6 +1,10 @@
+
+
 Part 1 (Throttle input on acceleration)
     - This part calculates and graphs the acceleration of the car in a straight line as the throttle input increases over time.
     - Throttle input follows: throttle input = -2/343 * time^3 + 3/49 * time^2 for 7 seconds and holds at 100% for 15 seconds
+    
+-Part 1 test is a simple test program that prints the calculations of part one out so I could check if the logic was right before graphing. It is explained more in depth in my write up.
 
 Part 2 (Steering input on slip angle)
     - This part calculates and graphs the slip angle of the car as steering input is applied
